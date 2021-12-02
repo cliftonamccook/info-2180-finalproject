@@ -83,7 +83,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
 
         // Sending Data Back To User
 
-        if($_POST["request"] == "newuserform") {
+        if(isset($_POST["request"]) && $_POST["request"] == "newuserform") {
             // echo $newuser;
             echo "<h1>New User</h1>";
             echo '<form method="POST" name="new-user" onsubmit="fsubmit(event);">';
@@ -99,7 +99,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             echo "</form>";
         }
 
-        if($_POST["request"] == "newissueform") {
+        if(isset($_POST["request"]) && $_POST["request"] == "newissueform") {
             // echo $newissue;
             $all_users = $conn->prepare("SELECT * FROM `users`");
             $all_users->execute();
@@ -136,12 +136,12 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             
         }
 
-        if($_POST["request"] == "gohome") {
+        if(isset($_POST["request"]) && $_POST["request"] == "gohome") {
             header("Location: home.php"); 
             exit();
         }
 
-        if($_POST["request"] == "mark-closed") {
+        if(isset($_POST["request"]) && $_POST["request"] == "mark-closed") {
             // echo $_POST['ticketId'];
             // exit();
             try {
@@ -161,7 +161,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             }                  
         }
 
-        if($_POST["request"] == "mark-in-progress") {
+        if(isset($_POST["request"]) && $_POST["request"] == "mark-in-progress") {
             // echo $_POST['ticketId'];
             // exit();
             try {
@@ -182,7 +182,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
         }
 
         // if "All" filter is selected
-        if($_POST["send_all"] == 'true') {
+        if(isset($_POST["send_all"]) && $_POST["send_all"] == 'true') {
             $all_issues = $conn->prepare("SELECT * FROM `issues`");
             $all_issues->execute();
             $rows = $all_issues->fetchAll(PDO::FETCH_ASSOC);
@@ -235,7 +235,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             $conn = null;
         }
 
-        if($_POST["send_open"] == 'true') {
+        if(isset($_POST["send_open"]) && $_POST["send_open"] == 'true') {
             $open_issues = $conn->prepare("SELECT * FROM `issues` WHERE status='open'");
             $open_issues->execute();
             $rows = $open_issues->fetchAll(PDO::FETCH_ASSOC);
@@ -287,7 +287,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             $conn = null;
         }
 
-        if($_POST["send_myisssues"] == 'true') {
+        if(isset($_POST["send_myisssues"]) && $_POST["send_myisssues"] == 'true') {
             $query = "SELECT * FROM `issues` WHERE assigned_to=:uid";
             $my_issues = $conn->prepare($query);
             $my_issues->bindValue(':uid', $_SESSION["uid"], PDO::PARAM_INT);
@@ -342,7 +342,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             $conn = null;
         }
         
-        if($_POST["details"]) {
+        if(isset($_POST["details"])) {
             $issue_details = $conn->prepare("SELECT * FROM `issues` WHERE id={$_POST['details']}");
             $issue_details->execute();
             $row = $issue_details->fetch(PDO::FETCH_ASSOC);
@@ -465,4 +465,3 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
 }
 
 ?>
-

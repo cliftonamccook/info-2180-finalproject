@@ -272,3 +272,15 @@ span.open-issue, span.closed-issue, span.in-progress-issue {
 .status-col {
     text-align: center;
 }
+
+input:invalid {
+    border: 2px solid red;
+}
+
+/* input:invalid:required {
+    border: 2px solid red;
+} */
+
+.error {
+    color: red;
+}

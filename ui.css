@@ -1,1 +1,274 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
+body {
+    margin: auto;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    grid-area: header;
+    background-color: black;
+    width: 100%;
+    height: 50px;
+    color: white;
+    padding-left: 30px;
+    font-weight: bold;
+}
+
+header img#bug-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 20px;
+}
+
+main {
+    grid-area: main;
+    padding: 30px;
+    height: 100vh;
+}
+
+nav {
+    grid-area: nav;
+    background-color: #f0f0f0;
+    padding-left: 30px;
+    padding: 30px 0 30px 30px;
+    height: 100vh;
+    min-width: 200px;
+    /* max-width: 25vw; */
+}
+
+nav img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+nav a div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+nav a div p {
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+nav a:hover {
+    color: #2da562;
+}
+
+#container {
+    display: grid;
+    grid-template-areas: 
+    'header header header header header header'
+    'nav main main main main main';
+}
+
+form input:not([type="submit"]) {
+    border-radius: 5px;
+    height: 40px;
+    width: 400px;
+}
+
+form textarea {
+    border-radius: 5px;
+    height: 120px;
+    width: 400px;
+    resize: none;
+}
+
+form label {
+    font-weight: bold;
+}
+
+input[type="submit"] {
+    background-color: #1b6ac9;
+    color: white;
+    padding: 5px 10px 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 100px;
+    height: 40px;
+}
+
+input[type="submit"]:hover {
+    background-color: #2da562;
+}
+
+div#dashboard-head h1 {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+div#dashboard-head button {
+    float: right;
+    margin: 0;
+    background-color: #2da562;
+    color: white;
+    padding: 5px 20px 5px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 200px;
+    height: 40px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 50px;
+}
+
+tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+td, th {
+    padding: 10px 0 10px 0;
+}
+
+thead {
+    background-color: #f0f0f0;
+    text-align: left;
+}
+
+div#filters {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+div#filters button {
+    margin: 10px;
+    padding: 5px 10px 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 120px;
+    height: 40px;
+}
+
+.default-filter {
+    background-color: #1b6ac9;
+    color: white;
+}
+
+div#filters button:focus {
+    background-color: #1b6ac9;
+    color: white;
+}
+
+#filters-title {
+    font-weight: bold;
+}
+
+.status {
+    background-color: #2da562;
+}
+
+div#full-details {
+    display: grid;
+    grid-template-areas: 
+    'title title title title title'
+    'issue issue issue card card'
+    'description description description card card'
+    'dates dates dates card card'
+    ;
+}
+
+div#full-details h2{
+    grid-area: title;
+}
+
+div#details-content {
+    grid-area: description;
+}
+
+div#details-container {
+    grid-area: card;
+    width: 300px;
+    margin-left: 50px;
+}
+
+div#details-card {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    border:1px solid black;
+    padding-top: 5px;
+}
+
+div.button-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+div.button-group button{
+    height: 50px;
+    margin-top: 10px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+div.button-group button#mark-closed{
+    background-color: #1b6ac9;
+}
+
+div.button-group button#mark-in-progress{
+    background-color: #2da562;
+}
+
+div#details-card p {
+    font-size: 10pt;
+    margin: 0;
+}
+
+div#details-card h5 {
+    /* margin-top: 5px; */
+    margin-bottom: 5px;
+}
+
+span#tid {
+    font-weight: bold;
+}
+
+.open-issue {
+    background-color: #2da562;
+    color: white;
+}
+
+.closed-issue {
+    background-color: #ff5400;
+    color: white;
+}
+
+.in-progress-issue {
+    background-color: #ffdb4d;
+    color: black;
+}
+
+span.open-issue, span.closed-issue, span.in-progress-issue {
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.status-col {
+    text-align: center;
+}

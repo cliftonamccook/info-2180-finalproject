@@ -1,1 +1,30 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugMe Issue Tracker</title>
+    <link rel="stylesheet" href="ui.css">
+    <script src="ui.js"></script>
+</head>
+<body>
+    <div id="container">
+    <header>
+        <img id="bug-icon" src="icons/bug.png" alt="bug icon">
+        <p>BugMe Issue Tracker</p>
+    </header>
+    <main id="content">
+        <form method="POST" action="control.php" name="user-login" onsubmit="fsubmit(event);">
+            <label for="email">Email:</label><br>
+            <input name="email" type="email"><span class="error" id="email-error"></span><br><br>
+            <label for="password">Password:</label><br>
+            <input name="password" type="password"><span class="error" id="password-error"></span><br><br>
+            <input name="formname" value="user-login" hidden>
+            <input id="login" type="submit" value="Login" >
+        </form>
+        <p id="message"></p>
+    </main> 
+    </div>   
+</body>
+</html>

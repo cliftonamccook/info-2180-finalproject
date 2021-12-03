@@ -148,10 +148,12 @@ function details(e) {
         
 }
 
-function validPwd(p) {
-    if (p.length > 8) {            
-        return true;
+function isValidPassword(pwd) {
+    let pattern = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[a-zA-Z0-9]{8,}$/;
+    if (!pwd.match(pattern)) {
+        return false;
     }
+    return true;
 }
 
 function validName(n) {
@@ -202,7 +204,7 @@ function fsubmit(e){
             return false;
         }
 
-        if (!validPwd(pwd)){
+        if (!isValidPassword(pwd)){
             alert("Password needs to be more than 8 characters");            
             return false;
         }
@@ -226,7 +228,7 @@ function fsubmit(e){
         passedValidation = true;
         if(passedValidation) {
             target.submit();
-            return; // no need for AJAX here
+            return; 
         } else {
             return false; // don't submit if failed any validation test
         }

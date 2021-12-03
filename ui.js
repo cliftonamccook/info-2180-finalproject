@@ -156,14 +156,38 @@ function isValidPassword(pwd) {
     return true;
 }
 
-function validName(n) {
-    var nameval = /^[a-zA-Z]+$/;  
+function isValidName(n) {
+    var nameval = /^[a-zA-Z- ']+$/;  
     return nameval.test(n);
 }
 
-function validEmail(e){
+function isValidEmail(e){
     var emailval = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return emailval.test(e);
+}
+
+function isValidDescription(d) {
+    let desc_patt = /^[a-zA-Z0-9_ $%"'?.,+-]+$/;
+    return desc_patt.test(d);
+}
+
+function isValidTitle(t){
+    let title_patt = /^[a-zA-Z- _']+$/;
+    return title_patt.test(t);
+}
+
+function isValidType(tp){
+    if(!(tp === "Bug" || tp === "Task" || tp === "Proposal")){
+        return false;
+    }
+    return true;
+}
+
+function isValidPriority(p){
+    if(!(p === "Minor" || p === "Major" || p === "Critical")){
+        return false;
+    }
+    return true;
 }
 
 // Validate and submit dynamically loaded forms
@@ -182,37 +206,43 @@ function fsubmit(e){
         let fname = document.querySelector('input[name="firstname"]').value;
         let lname = document.querySelector('input[name="lastname"]').value;
         let email = document.querySelector('input[type="email"]').value;
+
+        if(pwd=="" && fname=="" && lname=="" && email==""){
+            alert("Cannot submit empty form!");
+            return false;
+        }
              
-        if (!validName(fname)){
-            if (fname == ""){
-                alert("First Name invalid! Field Empty");                
-            }
-            else {
-                alert("First Name invalid! Must not contain special characters");
-            }          
+        if (!isValidName(fname)){
+            document.querySelector('input[name="firstname"]').style.backgroundColor = "red";
+            document.querySelector('span#fname-error').innerHTML = " *Invalid Firstname";         
             return false;
         }     
-             
+        document.querySelector('input[name="firstname"]').style.backgroundColor = "white";
+        document.querySelector('span#fname-error').innerHTML = ""; 
            
-        if (!validName(lname)){
-            if (lname == ""){
-                alert("Last Name invalid! Field Empty");                
-            }
-            else{
-                alert("Last Name invalid! Must not contain special characters");
-            }            
+        if (!isValidName(lname)){
+            document.querySelector('input[name="lastname"]').style.backgroundColor = "red";
+            document.querySelector('span#lname-error').innerHTML = " *Invalid Lastname";   
             return false;
         }
+        document.querySelector('input[name="lastname"]').style.backgroundColor = "white";
+        document.querySelector('span#lname-error').innerHTML = ""; 
 
         if (!isValidPassword(pwd)){
-            alert("Password needs to be more than 8 characters");            
+            document.querySelector('input[name="password"]').style.backgroundColor = "red";
+            document.querySelector('span#password-error').innerHTML = " *Must be at least 8 characters, at least one lowercase, one uppercase and at least one digit.";           
             return false;
         }
+        document.querySelector('input[name="password"]').style.backgroundColor = "white";
+        document.querySelector('span#password-error').innerHTML = "";     
 
-        if (!validEmail(email)){
-            alert("Enter the correct email format");
+        if (!isValidEmail(email)){
+            document.querySelector('input[name="email"]').style.backgroundColor = "red";
+            document.querySelector('span#email-error').innerHTML = " *Invalid email address";     
             return false;
         }
+        document.querySelector('input[name="email"]').style.backgroundColor = "white";
+        document.querySelector('span#email-error').innerHTML = "";   
 
         passedValidation = true;
         if(passedValidation) {
@@ -225,6 +255,29 @@ function fsubmit(e){
     
     if (form.name == "user-login"){
         // validate user input
+        let patt = /^[a-zA-Z0-9]{8,}$/;
+        let email = document.querySelector('input[name="email"]').value;
+        let password = document.querySelector('input[name="password"]').value;
+        if((email == "") && (password == "")){
+            alert("Both fields must be filled out!");
+            return false;
+        }
+        if(!isValidEmail(email)){
+            document.querySelector('input[name="email"]').style.backgroundColor = "red";
+            document.querySelector('span#email-error').innerHTML = " *Invalid email";
+            return false;
+        }
+        document.querySelector('input[name="email"]').style.backgroundColor = "white";
+        document.querySelector('span#email-error').innerHTML = "";
+
+        if (!patt.test(password)){
+            document.querySelector('input[name="password"]').style.backgroundColor = "red";
+            document.querySelector('span#password-error').innerHTML = " *Invalid password";
+            return false;
+        }
+        document.querySelector('input[name="password"]').style.backgroundColor = "white";
+        document.querySelector('span#password-error').innerHTML = "";
+
         passedValidation = true;
         if(passedValidation) {
             target.submit();
@@ -236,6 +289,57 @@ function fsubmit(e){
     
     if (form.name == "new-issue"){
         // Validate New Issue form data here
+        let title = document.querySelector('input[name="title"]').value;
+        let desc = document.querySelector('textarea[name="description"]').value;
+        let at = document.querySelector('input[name="assigned-to"]').value;
+        let type = document.querySelector('input[name="type"]').value;
+        let priority = document.querySelector('input[name="priority"]').value;
+
+        if(title=="" && desc=="" && at=="" && type=="" && priority==""){
+            alert("Cannot submit empty form!");
+            return false;
+        }
+
+        if(!isValidTitle(title)){
+            document.querySelector('input[name="title"]').style.backgroundColor ="red";
+            document.querySelector('span#title-error').innerHTML = " *Title can only include characters: a-zA-Z- _'";
+            return false;
+        }
+        document.querySelector('input[name="title"]').style.backgroundColor ="white";
+        document.querySelector('span#title-error').innerHTML = "";
+
+        if(!isValidDescription(desc)){
+            document.querySelector('textarea[name="description"]').style.backgroundColor ="red";
+            document.querySelector('span#description-error').innerHTML = " *Description can only include characters: a-zA-Z0-9_ $%\"'?.,+-";
+            return false;
+        }
+        document.querySelector('textarea[name="description"]').style.backgroundColor ="white";
+        document.querySelector('span#description-error').innerHTML = "";
+
+        if(!isValidName(at)){
+            document.querySelector('input[name="assigned-to"]').style.backgroundColor ="red";
+            document.querySelector('span#assigned-error').innerHTML = " *Please assign a valid user";
+            return false;
+        }
+        document.querySelector('input[name="assigned-to"]').style.backgroundColor ="white";
+        document.querySelector('span#assigned-error').innerHTML = "";
+
+        if(!isValidType(type)){
+            document.querySelector('input[name="type"]').style.backgroundColor ="red";
+            document.querySelector('span#type-error').innerHTML = " *Please select a valid type";
+            return false;
+        }
+        document.querySelector('input[name="type"]').style.backgroundColor ="white";
+        document.querySelector('span#type-error').innerHTML = "";
+
+        if(!isValidPriority(priority)){
+            document.querySelector('input[name="priority"]').style.backgroundColor ="red";
+            document.querySelector('span#priority-error').innerHTML = " *Please select a valid priority";
+            return false;
+        }
+        document.querySelector('input[name="priority"]').style.backgroundColor ="white";
+        document.querySelector('span#priority-error').innerHTML = "";
+
         passedValidation = true;
         if(passedValidation) {
             formData.append('formname', 'new-issue');

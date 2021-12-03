@@ -4,6 +4,41 @@ session_start();
 
 require("dbconnect.php");
 
+$login = 
+'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>BugMe Issue Tracker</title>
+            <link rel="stylesheet" href="ui.css">
+            <script src="ui.js"></script>
+        </head>
+        <body>
+            <div id="container">
+            <header>
+                <img id="bug-icon" src="icons/bug.png" alt="bug icon">
+                <p>BugMe Issue Tracker</p>
+            </header>
+            <main id="content">
+                <form method="POST" action="control.php" name="user-login" onsubmit="fsubmit(event);>
+                    <label for="email">Email:</label><br>
+                    <input name="email" type="email"><span class="error" id="email-error"></span><br><br>
+                    <label for="password">Password:</label><br>
+                    <input name="password" type="password"><span class="error" id="password-error"></span><br><br>
+                    <input name="formname" value="user-login" hidden>
+                    <input id="login" type="submit" value="Login">
+                </form>
+                <p id="message">Only registered users may login!</p>
+            </main> 
+            </div>   
+        </body>
+        </html>
+        '
+;
+
 function isValidPassword($pwd) {
     $pattern = '/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[a-zA-Z0-9]{8,}$/';
     if(!preg_match($pattern, $pwd)){
@@ -110,14 +145,14 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             echo "<h1>New User</h1>";
             echo '<form method="POST" name="new-user" onsubmit="fsubmit(event);">';
             echo "<label>Firstname:</label><br>";
-            echo '<input name="firstname"><br><br>';
+            echo '<input name="firstname"><span class="error" id="fname-error"></span><br><br>';
             echo "<label>Lastname:</label><br>";
-            echo '<input name="lastname"><br><br>';
+            echo '<input name="lastname"><span class="error" id="lname-error"></span><br><br>';
             echo "<label>Password:</label><br>";
             echo '<input name="password" type="password" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[a-zA-Z0-9]{8,}$" 
-            title="must be at least 8 characters long and contain at least one lowercase letter, at least one uppercase letter and at least 1 digit"><br><br>';
+            title="must be at least 8 characters long and contain at least one lowercase letter, at least one uppercase letter and at least 1 digit"><span class="error" id="password-error"></span><br><br>';
             echo "<label>Email:</label><br>";
-            echo '<input name="email" type="email"><br><br>';
+            echo '<input name="email" type="email"><span class="error" id="email-error"></span><br><br>';
             echo '<input name="newuserdata" type="submit" value="Submit" >';
             echo "</form>";
         }
@@ -130,25 +165,25 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             echo '<h1>Create Issue</h1>';
             echo '<form method="POST" name="new-issue" onsubmit="fsubmit(event);">';
             echo '<label>Title:</label><br>';
-            echo '<input name="title"><br><br>';
+            echo '<input name="title"><span class="error" id="title-error"></span><br><br>';
             echo '<label>Description:</label><br>';
-            echo '<textarea name="description"></textarea><br><br>';
+            echo '<textarea name="description"></textarea><span class="error" id="description-error"></span><br><br>';
             echo '<label>Assigned to:</label><br>';
-            echo '<input list="users" name="assigned-to">';
+            echo '<input list="users" name="assigned-to"><span class="error" id="assigned-error"></span>';
             echo '<datalist id="users">';
             foreach($rows as $row){
                 echo "<option value=\"{$row['firstname']} {$row['lastname']}\">";
             }
             echo '</datalist><br><br>';
             echo '<label>Type:</label><br>';
-            echo '<input list="types" name="type"><br><br>';
+            echo '<input list="types" name="type"><span class="error" id="type-error"></span><br><br>';
             echo '<datalist id="types">';
             echo '<option value="Bug">';
             echo '<option value="Proposal">';
             echo '<option value="Task">';
             echo '</datalist>';
             echo '<label>Priority:</label><br>';
-            echo '<input list="priority" name="priority"><br><br>';
+            echo '<input list="priority" name="priority"><span class="error" id="priority-error"></span><br><br>';
             echo '<datalist id="priority">';
             echo '<option value="Minor">';
             echo '<option value="Major">';
@@ -178,7 +213,31 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
                 $update2->bindValue(':ID', $id, PDO::PARAM_INT);
                 $update2->execute();
                 $date = $update2->fetch(PDO::FETCH_ASSOC);
-                echo "CLOSED&{$date['updated']}";
+
+                try {
+                    $current_uid = $_SESSION['uid'];
+                    $check = "SELECT * FROM `users` WHERE id=:cid";
+                    $person = $conn->prepare($check);
+                    $person->bindValue(':cid', $current_uid, PDO::PARAM_INT);
+                    $person->execute();
+                    $name = $person->fetch(PDO::FETCH_ASSOC);
+                    $updater_fname = $name["firstname"];
+                    $updater_lname = $name["lastname"];
+                } catch(PDOException $p) {
+                    echo "Something went wrong";
+                }
+
+                $dt_up = $row['updated'];
+                $dt_up2 = new DateTime($dt_up);
+                $du = $dt_up2->format('F d, Y');
+                $tu = $dt_up2->format('h:i A');
+    
+
+                $dt = new DateTime($date["updated"]);
+                $d = $dt->format('F d, Y');
+                $t = $dt->format('h:i A');
+
+                echo "CLOSED&> Updated on {$d} at {$t} by {$updater_fname} {$updater_lname}";
             } catch(PDOException $p) {
                 echo "Something went wrong";
             }                  
@@ -198,7 +257,31 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
                 $update2->bindValue(':ID', $id, PDO::PARAM_INT);
                 $update2->execute();
                 $date = $update2->fetch(PDO::FETCH_ASSOC);
-                echo "IN PROGRESS&{$date['updated']}";
+
+                try {
+                    $current_uid = $_SESSION['uid'];
+                    $check = "SELECT * FROM `users` WHERE id=:cid";
+                    $person = $conn->prepare($check);
+                    $person->bindValue(':cid', $current_uid, PDO::PARAM_INT);
+                    $person->execute();
+                    $name = $person->fetch(PDO::FETCH_ASSOC);
+                    $updater_fname = $name["firstname"];
+                    $updater_lname = $name["lastname"];
+                } catch(PDOException $p) {
+                    echo "Something went wrong";
+                }
+
+                $dt_up = $row['updated'];
+                $dt_up2 = new DateTime($dt_up);
+                $du = $dt_up2->format('F d, Y');
+                $tu = $dt_up2->format('h:i A');
+    
+
+                $dt = new DateTime($date["updated"]);
+                $d = $dt->format('F d, Y');
+                $t = $dt->format('h:i A');
+
+                echo "IN PROGRESS&> Updated on {$d} at {$t} by {$updater_fname} {$updater_lname}";
             } catch(PDOException $p) {
                 echo "Something went wrong";
             }                  
@@ -377,9 +460,46 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             echo "<h4 id=\"{$row['id']}\">Issue #{$row['id']}</h4>";
             // echo "<div id='details-body'>";
             echo "<div id='details-content'>";
-            echo "<p class=\"description\">{$row['description']}</p>";
-            echo "<p>{$row['created']}</p>";
-            echo "<p id=\"update-time\">{$row['updated']}</p>";
+            echo "<p class=\"description\">{$row['description']}</p><br/><br/>";
+
+            try {
+                $uid = $row['created_by'];
+                $check = "SELECT * FROM `users` WHERE id=:uid";
+                $person = $conn->prepare($check);
+                $person->bindValue(':uid', $uid, PDO::PARAM_INT);
+                $person->execute();
+                $name = $person->fetch(PDO::FETCH_ASSOC);
+                $creator_fname = $name["firstname"];
+                $creator_lname = $name["lastname"];
+            } catch(PDOException $p) {
+                echo "Something went wrong";
+            } 
+            $dt = $row['created'];
+            $dt2 = new DateTime($dt);
+            $d = $dt2->format('F d, Y');
+            $t = $dt2->format('h:i A');
+
+            // echo "<p>Issue created on {$row['created']} at * by {$creator_fname} {$creator_lname}</p>";
+            echo "<p>> Issue created on {$d} at {$t} by {$creator_fname} {$creator_lname}</p>";
+
+            try {
+                $current_uid = $_SESSION['uid'];
+                $check = "SELECT * FROM `users` WHERE id=:cid";
+                $person = $conn->prepare($check);
+                $person->bindValue(':cid', $current_uid, PDO::PARAM_INT);
+                $person->execute();
+                $name = $person->fetch(PDO::FETCH_ASSOC);
+                $updater_fname = $name["firstname"];
+                $updater_lname = $name["lastname"];
+            } catch(PDOException $p) {
+                echo "Something went wrong";
+            }
+            $dt_up = $row['updated'];
+            $dt_up2 = new DateTime($dt_up);
+            $du = $dt_up2->format('F d, Y');
+            $tu = $dt_up2->format('h:i A');
+
+            echo "<p id=\"update-time\">> Updated on {$du} at {$tu} by {$updater_fname} {$updater_lname}</p>";
             echo "</div>";
             echo "<div id='details-container'>";
             echo "<div id='details-card'>";
@@ -446,44 +566,14 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
         } else {
             $conn = null;
             // redirect user to login page
-            header("Location: index.html"); 
-            exit();
+            // header("Location: index.html"); 
+            // exit();
+            echo $login;
         }
     } else {
         // failed login
         $conn = null;
-        echo '
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>BugMe Issue Tracker</title>
-            <link rel="stylesheet" href="ui.css">
-            <script src="ui.js"></script>
-        </head>
-        <body>
-            <div id="container">
-            <header>
-                <img id="bug-icon" src="icons/bug.png" alt="bug icon">
-                <p>BugMe Issue Tracker</p>
-            </header>
-            <main id="content">
-                <form method="POST" action="control.php" name="user-login" onsubmit="fsubmit(event);>
-                    <label for="email">Email:</label><br>
-                    <input name="email" type="email"><br><br>
-                    <label for="password">Password:</label><br>
-                    <input name="password" type="password"><br><br>
-                    <input name="formname" value="user-login" hidden>
-                    <input id="login" type="submit" value="Login">
-                </form>
-                <p id="message">Only registered users may login!</p>
-            </main> 
-            </div>   
-        </body>
-        </html>
-        ';
+        echo $login;
     }
 }
 

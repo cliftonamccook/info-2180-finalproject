@@ -214,30 +214,13 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
                 $update2->execute();
                 $date = $update2->fetch(PDO::FETCH_ASSOC);
 
-                try {
-                    $current_uid = $_SESSION['uid'];
-                    $check = "SELECT * FROM `users` WHERE id=:cid";
-                    $person = $conn->prepare($check);
-                    $person->bindValue(':cid', $current_uid, PDO::PARAM_INT);
-                    $person->execute();
-                    $name = $person->fetch(PDO::FETCH_ASSOC);
-                    $updater_fname = $name["firstname"];
-                    $updater_lname = $name["lastname"];
-                } catch(PDOException $p) {
-                    echo "Something went wrong";
-                }
-
-                $dt_up = $row['updated'];
-                $dt_up2 = new DateTime($dt_up);
-                $du = $dt_up2->format('F d, Y');
-                $tu = $dt_up2->format('h:i A');
-    
+                 
 
                 $dt = new DateTime($date["updated"]);
                 $d = $dt->format('F d, Y');
                 $t = $dt->format('h:i A');
 
-                echo "CLOSED&> Updated on {$d} at {$t} by {$updater_fname} {$updater_lname}";
+                echo "CLOSED&> Last updated on {$d} at {$t}";
             } catch(PDOException $p) {
                 echo "Something went wrong";
             }                  
@@ -258,30 +241,13 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
                 $update2->execute();
                 $date = $update2->fetch(PDO::FETCH_ASSOC);
 
-                try {
-                    $current_uid = $_SESSION['uid'];
-                    $check = "SELECT * FROM `users` WHERE id=:cid";
-                    $person = $conn->prepare($check);
-                    $person->bindValue(':cid', $current_uid, PDO::PARAM_INT);
-                    $person->execute();
-                    $name = $person->fetch(PDO::FETCH_ASSOC);
-                    $updater_fname = $name["firstname"];
-                    $updater_lname = $name["lastname"];
-                } catch(PDOException $p) {
-                    echo "Something went wrong";
-                }
-
-                $dt_up = $row['updated'];
-                $dt_up2 = new DateTime($dt_up);
-                $du = $dt_up2->format('F d, Y');
-                $tu = $dt_up2->format('h:i A');
-    
+                   
 
                 $dt = new DateTime($date["updated"]);
                 $d = $dt->format('F d, Y');
                 $t = $dt->format('h:i A');
 
-                echo "IN PROGRESS&> Updated on {$d} at {$t} by {$updater_fname} {$updater_lname}";
+                echo "IN PROGRESS&> Last updated on {$d} at {$t}";
             } catch(PDOException $p) {
                 echo "Something went wrong";
             }                  
@@ -499,7 +465,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             $du = $dt_up2->format('F d, Y');
             $tu = $dt_up2->format('h:i A');
 
-            echo "<p id=\"update-time\">> Updated on {$du} at {$tu} by {$updater_fname} {$updater_lname}</p>";
+            echo "<p id=\"update-time\">> Last updated on {$du} at {$tu}</p>";
             echo "</div>";
             echo "<div id='details-container'>";
             echo "<div id='details-card'>";

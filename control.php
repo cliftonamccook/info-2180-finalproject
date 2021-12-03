@@ -4,6 +4,15 @@ session_start();
 
 require("dbconnect.php");
 
+function isValidPassword($pwd) {
+    $pattern = '/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[a-zA-Z0-9]{8,}$/';
+    if(!preg_match($pattern, $pwd)){
+        return FALSE;
+    }
+    return TRUE;
+}
+
+
 if(isset($_SESSION["username"], $_SESSION["password"])) {
     // user is already logged in
     if($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -11,10 +20,19 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             switch($_POST["formname"]) {
                 case "new-user":
                     // sanitize!
+                    if (strlen($_POST["firstname"])==0 or strlen($_POST["lastname"])==0 or strlen($_POST["password"])==0 or strlen($_POST["email"])==0){
+                        echo "All fields must be filled out.";
+                        exit();
+                    }
                     $fname = strip_tags($_POST["firstname"]);
                     $lname = strip_tags($_POST["lastname"]);
-                    $pword = password_hash(strip_tags($_POST["password"]), PASSWORD_DEFAULT);
-                    $email = strip_tags($_POST["email"]);
+                    $pwd = strip_tags($_POST["password"]);
+                    if (!isValidPassword($pwd)) {
+                        echo "Invalid password entered.";
+                        exit();
+                    }
+                    $pword = password_hash($pwd, PASSWORD_DEFAULT);
+                    $email = filter_var($_POST["email"], FILTER_VALIDATE_EMAIL);
                     try{
                         $query = "INSERT INTO `users` VALUES(NULL, :fname, :lname, :pword, :email, NOW())";
                         $sql = $conn->prepare($query);
@@ -32,6 +50,10 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
                     break;
                 case "new-issue":
                     // sanitize!
+                    if (strlen($_POST["title"])==0 or strlen($_POST["description"])==0 or strlen($_POST["type"])==0 or strlen($_POST["priority"])==0 or strlen($_POST["assigned-to"])==0) {
+                        echo "All fields must be filled out.";
+                        exit();
+                    }
                     $title = strip_tags($_POST["title"]);
                     $description = strip_tags($_POST["description"]);
                     $type = strip_tags($_POST["type"]);
@@ -92,7 +114,8 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             echo "<label>Lastname:</label><br>";
             echo '<input name="lastname"><br><br>';
             echo "<label>Password:</label><br>";
-            echo '<input name="password" type="password"><br><br>';
+            echo '<input name="password" type="password" pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[a-zA-Z0-9]{8,}$" 
+            title="must be at least 8 characters long and contain at least one lowercase letter, at least one uppercase letter and at least 1 digit"><br><br>';
             echo "<label>Email:</label><br>";
             echo '<input name="email" type="email"><br><br>';
             echo '<input name="newuserdata" type="submit" value="Submit" >';
@@ -145,7 +168,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             // echo $_POST['ticketId'];
             // exit();
             try {
-                $id = $_POST['ticketId'];
+                $id = filter_var($_POST['ticketId'], FILTER_VALIDATE_INT);
                 $stmt = "UPDATE `issues` SET status='CLOSED', updated=NOW() WHERE id=:ID";
                 $update = $conn->prepare($stmt);
                 $update->bindValue(':ID', $id, PDO::PARAM_INT);
@@ -165,7 +188,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
             // echo $_POST['ticketId'];
             // exit();
             try {
-                $id = $_POST['ticketId'];
+                $id = filter_var($_POST['ticketId'], FILTER_VALIDATE_INT);
                 $stmt = "UPDATE `issues` SET status='IN PROGRESS', updated=NOW() WHERE id=:ID";
                 $update = $conn->prepare($stmt);
                 $update->bindValue(':ID', $id, PDO::PARAM_INT);
@@ -236,7 +259,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
         }
 
         if(isset($_POST["send_open"]) && $_POST["send_open"] == 'true') {
-            $open_issues = $conn->prepare("SELECT * FROM `issues` WHERE status='open'");
+            $open_issues = $conn->prepare("SELECT * FROM `issues` WHERE status='OPEN'");
             $open_issues->execute();
             $rows = $open_issues->fetchAll(PDO::FETCH_ASSOC);
             echo "
@@ -396,7 +419,7 @@ if(isset($_SESSION["username"], $_SESSION["password"])) {
 
 } else {
     // check if user is registered in database
-    $useremail = strip_tags($_POST["email"]);
+    $useremail = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
     $userpwd = strip_tags($_POST["password"]);
     $result;
     try{
